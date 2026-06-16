@@ -1,33 +1,88 @@
-# interview-failure-intelligence-system
+# Interview Failure Intelligence System (IFIS)
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+A career analytics platform that turns interview failures into actionable insights. This repository contains the **Core slice**: User Management (JWT auth + roles), the Interview Tracker, and the Analytics Dashboard (Failure DNA, Career Risk Score, and personalized recommendations).
 
-## Built with v0
+## Tech Stack
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+| Layer     | Technology                                              |
+| --------- | ------------------------------------------------------- |
+| Frontend  | Angular 17 (standalone), Angular Material, RxJS, ng2-charts (Chart.js) |
+| Backend   | ASP.NET Core 8 Web API, Entity Framework Core 8         |
+| Auth      | JWT bearer tokens, role-based authorization             |
+| Database  | SQL Server (LocalDB or full instance)                   |
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_EKQOVB6aPszN0EbVNu54XYKeayRi)
+## Repository Layout
 
-## Getting Started
+```
+backend/
+  IFIS.Api/
+    Controllers/        AuthController, InterviewsController, DashboardController
+    Data/               AppDbContext
+    Dtos/               Request/response contracts
+    Models/             Entities + enums
+    Services/           TokenService, AnalyticsService
+    Program.cs          DI, JWT, CORS, EF wiring
+    appsettings.json    Connection string + JWT settings
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+frontend/
+  ifis-web/
+    src/app/core/       models, services, JWT interceptor, auth guard
+    src/app/features/   auth, interviews, dashboard, shell
+    src/app/app.routes.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Backend — Run Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Prerequisites: .NET 8 SDK, SQL Server (LocalDB), and the EF Core CLI tools (`dotnet tool install --global dotnet-ef`).
 
-## Learn More
+1. Set the connection string in `backend/IFIS.Api/appsettings.json`.
+2. Ensure the `Jwt:Key` is set correctly.
+3. Create the database schema:
+   ```bash
+   cd backend/IFIS.Api
+   dotnet ef migrations add InitialCreate
+   dotnet ef database update
+   ```
+4. Run the API:
+   ```bash
+   dotnet run
+   ```
+   Swagger UI is available at `https://localhost:7211/swagger`.
 
-To learn more, take a look at the following resources:
+## Frontend — Run Locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+Prerequisites: Node.js 18+ and the Angular CLI (`npm install -g @angular/cli`).
+
+1. Install dependencies:
+   ```bash
+   cd frontend/ifis-web
+   npm install
+   ```
+2. Run the application:
+   ```bash
+   npm start
+   ```
+
+The app runs at `http://localhost:4200`.
+
+## API Surface (Core slice)
+
+| Method | Route                         | Auth      | Purpose                                  |
+| ------ | ----------------------------- | --------- | ---------------------------------------- |
+| POST   | `/api/auth/register`          | Public    | Create account (Candidate or Mentor)     |
+| POST   | `/api/auth/login`             | Public    | Get JWT                                  |
+| GET    | `/api/auth/me`                | Bearer    | Current user profile                     |
+| GET    | `/api/interviews`             | Bearer    | List the user's interviews               |
+| GET    | `/api/interviews/{id}`        | Bearer    | Interview detail (rounds + weaknesses)   |
+| POST   | `/api/interviews`             | Bearer    | Create an interview record               |
+| PUT    | `/api/interviews/{id}`        | Bearer    | Update an interview                      |
+| DELETE | `/api/interviews/{id}`        | Bearer    | Delete an interview                      |
+| GET    | `/api/dashboard/summary`      | Bearer    | KPIs, Failure DNA, Career Risk, trends   |
+
+## Analytics Logic
+
+The intelligence layer is located in `backend/IFIS.Api/Services/AnalyticsService.cs`. It computes:
+
+- **Failure DNA** — aggregates weakness tags into weighted percentages.
+- **Career Risk Score** — combines rejection frequency, recent inactivity, and outcome trend.
+- **Recommendations** — prioritized improvement suggestions based on weaknesses.
