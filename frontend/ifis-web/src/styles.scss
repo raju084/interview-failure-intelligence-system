@@ -1,0 +1,51 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  background: #f4f6fa;
+  color: #1f2733;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.muted {
+  color: #6b7686;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.cards-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.risk-low {
+  color: #1b8a5a;
+}
+.risk-medium {
+  color: #b8860b;
+}
+.risk-high {
+  color: #c0392b;
+}

@@ -1,0 +1,25 @@
+# Common ignores
+node_modules
+.DS_Store
+.env*.local
+
+# Angular
+.angular/
+dist/
+tmp/
+out/
+.vscode/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# IFIS specific
+frontend/ifis-web/node_modules/
+backend/IFIS.Api/bin/
+backend/IFIS.Api/obj/
